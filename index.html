@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТрейдТрансKZ | Железнодорожная логистика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;       
+            --accent: #0066cc;        
+            --accent-hover: #004c99;
+            --text-dark: #334155;     
+            --bg-milky: #fdfbf7;      
+            --bg-milky-dark: #f3efe6; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, p {
+            word-break: break-word;
+            overflow-wrap: break-word;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+        }
+
+        body {
+            background-color: var(--bg-milky);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow: hidden; 
+        }
+
+        /* --- СТАРТОВЫЙ ЭКРАН (СПЛЭШ-СКРИН) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #0f172a;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+
+        .splash-logo {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse-banner 2.5s infinite ease-in-out;
+        }
+
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #ffffff;
+        }
+
+        @keyframes pulse-banner {
+            0% { transform: scale(0.98); opacity: 0.9; }
+            50% { transform: scale(1.0); opacity: 1; }
+            100% { transform: scale(0.98); opacity: 0.9; }
+        }
+
+        /* --- ШАПКА --- */
+        header {
+            background-color: rgba(253, 251, 247, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 1.6rem;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            z-index: 1001; 
+        }
+        
+        .logo span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .desktop-nav a {
+            color: var(--primary);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .desktop-nav a:hover {
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .header-btn {
+            z-index: 1001;
+        }
+
+        /* --- БУРГЕР И МОБИЛЬНОЕ МЕНЮ --- */
+        .burger-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .burger-btn span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%; 
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-milky);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            transition: right 0.4s ease;
+            z-index: 999;
+        }
+
+        .mobile-menu.active {
+            right: 0; 
+        }
+
+        .mobile-menu a:not(.btn-primary) {
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .burger-btn.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+        .burger-btn.active span:nth-child(2) { opacity: 0; }
+        .burger-btn.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+        /* --- ГЛАВНЫЙ ЭКРАН --- */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(rgba(253, 251, 247, 0.85), rgba(243, 239, 230, 0.95)), url('https://images.unsplash.com/photo-1496350361223-9584b47eb685?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+            display: flex;
+            align-items: center;
+            padding: 6rem 5% 2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            color: var(--primary);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            max-width: 90%;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* --- СТАТИСТИКА --- */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem 5% 5rem;
+            background-color: var(--bg-milky-dark);
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        /* --- БЛОК О КОМПАНИИ --- */
+        .about {
+            padding: 5rem 5%;
+            background-color: #ffffff;
+        }
+
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* --- ПРЕИМУЩЕСТВА --- */
+        .advantages {
+            padding: 5rem 5%;
+            background-color: var(--bg-milky);
+            text-align: center;
+        }
+
+        .adv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .adv-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            text-align: left;
+            border-top: 4px solid var(--accent);
+        }
+
+        .adv-card h4 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .adv-card p {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        /* --- УСЛУГИ --- */
+        .services {
+            padding: 5rem 5%;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            font-weight: 800;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--bg-milky);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-img {
+            height: 220px;
+            background-color: #cbd5e1;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .service-content {
+            padding: 1.5rem;
+        }
+
+        .service-content h4 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .btn-outline {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* --- НОВОСТИ --- */
+        .news {
+            padding: 5rem 5%;
+            background-color: var(--bg-milky-dark);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .news-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+
+        .news-date {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-card h4 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .news-card p {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        /* --- ФУТЕР (КОНТАКТЫ И РЕКВИЗИТЫ) --- */
+        footer {
+            background-color: var(--primary);
+            color: #f8fafc;
+            padding: 4rem 5% 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+
+        .footer-col h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.2rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .footer-col p, .footer-col li {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            list-style: none;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* --- ПЛАВАЮЩАЯ ИКОНКА WHATSAPP --- */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.8);
+            z-index: 998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            animation: pulse-green 2s infinite;
+        }
+
+        .whatsapp-float svg { width: 35px; height: 35px; fill: white; }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+
+        /* --- КАЛЬКУЛЯТОР И АНКЕТА --- */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .calc-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        #calcResultContainer {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        #calcResult {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.9rem; line-height: 1.3; }
+            .hero p { font-size: 1.05rem; max-width: 100%; }
+            .desktop-nav, .header-btn { display: none; }
+            .burger-btn { display: flex; }
+            .whatsapp-float { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+            .whatsapp-float svg { width: 30px; height: 30px; }
+            .hero-buttons { flex-direction: column; width: 100%; }
+            .hero-buttons .btn-primary { width: 100%; }
+            .section-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- СТАРТОВЫЙ ЭКРАН (СПЛЭШ-СКРИН) -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <img src="https://i.ibb.co.com/xSyPF0gw/1791812363982.jpg" alt="ТрейдТрансKZ">
+        </div>
+    </div>
+
+    <!-- ШАПКА -->
+    <header>
+        <a href="#" class="logo">ТрейдТранс<span>KZ</span></a>
+        
+        <nav class="desktop-nav">
+            <a href="#">Главная</a>
+            <a href="#about">О компании</a>
+            <a href="#services">Услуги</a>
+            <a href="#news">Новости</a>
+            <a href="#contacts">Контакты</a>
+        </nav>
+        
+        <button onclick="openCalc()" class="btn-primary header-btn">Запрос на перевозку</button>
+        
+        <div class="burger-btn" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- МОБИЛЬНОЕ МЕНЮ -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" onclick="toggleMenu()">Главная</a>
+        <a href="#about" onclick="toggleMenu()">О компании</a>
+        <a href="#services" onclick="toggleMenu()">Услуги</a>
+        <a href="#news" onclick="toggleMenu()">Новости</a>
+        <a href="#contacts" onclick="toggleMenu()">Контакты</a>
+        <button onclick="toggleMenu(); openCalc();" class="btn-primary">Запрос на перевозку</button>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Эффективные железнодорожные перевозки</h1>
+            <p>Профессиональная логистика для вашего бизнеса от компании ТрейдТрансKZ. Надежно, безопасно, точно в срок по РК, СНГ и Азии.</p>
+            <div class="hero-buttons">
+                <button onclick="openCalc()" class="btn-primary">Рассчитать стоимость</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- СТАТИСТИКА -->
+    <section class="stats">
+        <div class="stat-card">
+            <h3>1000+</h3>
+            <p>Успешных доставок грузов</p>
+        </div>
+        <div class="stat-card">
+            <h3>549</h3>
+            <p>Довольных клиентов</p>
+        </div>
+        <div class="stat-card">
+            <h3>30</h3>
+            <p>Стран партнеров</p>
+        </div>
+    </section>
+
+    <!-- БЛОК О КОМПАНИИ -->
+    <section id="about" class="about">
+        <div class="about-container">
+            <h2>О компании ТОО «ТрейдТрансKZ»</h2>
+            <p>Мы — динамично развивающаяся компания, созданная на казахстанском рынке в 2026 году. За короткий промежуток времени мы зарекомендовали себя как надежный партнер, придерживающийся принципов взаимовыгодных интересов.</p>
+            <p>С 2026 года мы являемся оператором вагонов своего собственного железнодорожного подвижного состава (крытые, полувагоны, зерновозы). Мы предлагаем грузоперевозки как сборными грузами, так и отдельным выделенным транспортом в любых направлениях.</p>
+        </div>
+    </section>
+
+    <!-- ПРЕИМУЩЕСТВА -->
+    <section class="advantages">
+        <h2 class="section-title">Почему выбирают нас</h2>
+        <div class="adv-grid" style="max-width: 1200px; margin: 0 auto;">
+            <div class="adv-card">
+                <h4>Собственный парк вагонов</h4>
+                <p>Крытые вагоны, полувагоны и зерновозы под любые ваши задачи.</p>
+            </div>
+            <div class="adv-card">
+                <h4>Выгодные тарифы</h4>
+                <p>Приемлемый и экономически выгодный железнодорожный тариф, расчет для каждого.</p>
+            </div>
+            <div class="adv-card">
+                <h4>Экспедирование и оплата</h4>
+                <p>Качественное экспедирование и внесение оплат ж/д тарифов по Казахстану и СНГ.</p>
+            </div>
+            <div class="adv-card">
+                <h4>Юридическая гарантия</h4>
+                <p>Полная ответственность компании за сохранность груза и своевременную доставку.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- УСЛУГИ -->
+    <section id="services" class="services">
+        <h2 class="section-title">Наши услуги</h2>
+        <div class="services-grid" style="max-width: 1200px; margin: 0 auto;">
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Организация перевозок" class="service-img">
+                <div class="service-content">
+                    <h4>Организация перевозок</h4>
+                    <p style="color: var(--text-dark); margin-bottom: 1.5rem; font-size: 0.95rem;">Ж/д грузовые перевозки любого типа и уровня сложности.</p>
+                    <button onclick="openCalc()" class="btn-outline">Рассчитать &rarr;</button>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1605337299109-b13c32e1853d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Экспедирование грузов" class="service-img">
+                <div class="service-content">
+                    <h4>Экспедирование грузов</h4>
+                    <p style="color: var(--text-dark); margin-bottom: 1.5rem; font-size: 0.95rem;">Сопровождение груза на всех этапах пути, оформление документации.</p>
+                    <button onclick="openCalc()" class="btn-outline">Рассчитать &rarr;</button>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Консультирование" class="service-img">
+                <div class="service-content">
+                    <h4>Логистическое консультирование</h4>
+                    <p style="color: var(--text-dark); margin-bottom: 1.5rem; font-size: 0.95rem;">Оптимизация маршрутов и снижение затрат на логистику для вашего бизнеса.</p>
+                    <button onclick="openCalc()" class="btn-outline">Рассчитать &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- НОВОСТИ -->
+    <section id="news" class="news">
+        <h2 class="section-title" style="text-align: center;">Новости и события</h2>
+        <div class="news-grid">
+            <div class="news-card">
+                <div class="news-date">2026 год</div>
+                <h4>Расширение географии перевозок</h4>
+                <p>ТОО «ТрейдТрансKZ» успешно запускает новые логистические коридоры по странам СНГ и Азии.</p>
+            </div>
+            <div class="news-card">
+                <div class="news-date">2026 год</div>
+                <h4>Обновление парка вагонов</h4>
+                <p>Компания увеличила собственный парк полувагонов и зерновозов для бесперебойной отправки грузов.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФУТЕР (КОНТАКТЫ И РЕКВИЗИТЫ) -->
+    <footer id="contacts">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>ТОО «ТрейдТрансKZ»</h3>
+                <p>Динамично развивающаяся компания в сфере железнодорожной логистики и оператор собственного подвижного состава.</p>
+                <p><b>Директор:</b> Дастанұлы И.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Контакты</h3>
+                <p>📍 Казахстан, г. Шымкент, Аль-Фарабийский район, ул. Ахмет Байтурсынов, зд. 18А</p>
+                <p>📞 Тел: <a href="tel:87774130060">8 777 413 00 60</a></p>
+                <p>📱 WhatsApp: <a href="https://wa.me/77789228215">8 700 235 92 69</a></p>
+                <p>✉️ Email: <a href="mailto:tradetranskz26@mail.ru">tradetranskz26@mail.ru</a></p>
+            </div>
+            <div class="footer-col">
+                <h3>Реквизиты</h3>
+                <p>Банк: АО «Народный Банк Казахстана»</p>
+                <p>БИН: 260740044930</p>
+                <p>ИИК: KZ73601A291014602401</p>
+                <p>БИК: HSBKKZKX</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ТОО «ТрейдТрансKZ». Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- СВЕТЯЩАЯСЯ КНОПКА WHATSAPP -->
+    <a href="https://wa.me/77789228215?text=Здравствуйте!%20Пишу%20вам%20с%20сайта.%20Интересуют%20ваши%20логистические%20услуги." class="whatsapp-float" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 413.2c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 334.1l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.2-186.6 184.2zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+        </svg>
+    </a>
+
+    <!-- МОДАЛЬНОЕ ОКНО КАЛЬКУЛЯТОРА И АНКЕТЫ -->
+    <div id="calcModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCalc()">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Калькулятор расчета</h2>
+            <p style="margin-bottom: 1.5rem; font-size: 0.9rem; color: #64748b;">Узнайте предварительную стоимость и отправьте заявку на точный расчет.</p>
+            
+            <input type="number" id="calcWeight" class="calc-input" placeholder="Вес груза (тонн)">
+            <input type="number" id="calcDistance" class="calc-input" placeholder="Расстояние (км)">
+            
+            <button onclick="calculateCost()" class="btn-primary" style="width: 100%;">Посчитать стоимость</button>
+            
+            <div id="calcResultContainer">
+                <div id="calcResult"></div>
+                
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
+                
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Получить точный расчет в WhatsApp</h3>
+                
+                <input type="text" id="clientRoute" class="calc-input" placeholder="Откуда и Куда (Шымкент - Алматы)">
+                <input type="text" id="clientCargo" class="calc-input" placeholder="Вид груза (зерно, металл)">
+                <input type="text" id="clientName" class="calc-input" placeholder="Ваше имя / Компания">
+                
+                <button onclick="sendToWhatsApp()" class="btn-primary" style="width: 100%; background-color: #25d366;">Отправить точный расчет в WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- СКРИПТЫ -->
+    <script>
+        // Загрузочный экран
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                document.body.style.overflow = 'auto';
+            }, 2500); 
+        });
+
+        // Мобильное меню
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const burger = document.querySelector('.burger-btn');
+            menu.classList.toggle('active');
+            burger.classList.toggle('active');
+            if(menu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Калькулятор
+        function openCalc() { document.getElementById('calcModal').style.display = 'flex'; }
+        function closeCalc() { document.getElementById('calcModal').style.display = 'none'; }
+        window.onclick = function(event) {
+            let modal = document.getElementById('calcModal');
+            if (event.target == modal) { modal.style.display = "none"; }
+        }
+
+        function calculateCost() {
+            let weight = parseFloat(document.getElementById('calcWeight').value);
+            let distance = parseFloat(document.getElementById('calcDistance').value);
+            let resultContainer = document.getElementById('calcResultContainer');
+            let resultDiv = document.getElementById('calcResult');
+
+            if (!weight || !distance) {
+                alert("Пожалуйста, введите вес и расстояние.");
+                return;
+            }
+
+            let baseRate = 25; 
+            let total = weight * distance * baseRate;
+            let formattedTotal = total.toLocaleString('ru-RU');
+            
+            resultDiv.innerHTML = `Примерная стоимость: ~ ${formattedTotal} ₸`;
+            resultContainer.style.display = 'block';
+        }
+
+        function sendToWhatsApp() {
+            let weight = document.getElementById('calcWeight').value;
+            let distance = document.getElementById('calcDistance').value;
+            let route = document.getElementById('clientRoute').value;
+            let cargo = document.getElementById('clientCargo').value;
+            let name = document.getElementById('clientName').value;
+
+            if (!route || !cargo || !name) {
+                alert("Пожалуйста, заполните поля маршрута, груза и вашего имени.");
+                return;
+            }
+
+            let text = `Здравствуйте! Хочу запросить точный расчет железнодорожной перевозки.%0A%0A` +
+                       `👤 Имя/Компания: ${name}%0A` +
+                       `📦 Груз: ${cargo}%0A` +
+                       `⚖️ Вес: ${weight} тонн%0A` +
+                       `📍 Маршрут: ${route} (расстояние ~ ${distance} км)`;
+
+            let phoneNumber = "77789228215";
+            let url = `https://wa.me/${phoneNumber}?text=${text}`;
+            
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
